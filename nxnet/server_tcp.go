@@ -46,12 +46,21 @@ func (s *ServerTCP) Listen() {
 
 func (s *ServerTCP) SendMessage(msg Message) {
 	if msg.Client_id == 0 {
+		switch msg.Kind {
+		case MsgKindData:
+			for _, v := range s.connections {
+				v.SendMessage(msg)
+			}
+		}
 
 	} else {
 		// TODO merge if statements ?
 		if val, ok := s.connections[msg.Client_id]; ok {
 			if val.IsAlive() {
-				val.SendMessage(msg)
+				switch msg.Kind {
+				case MsgKindData:
+					val.SendMessage(msg)
+				}
 			} else {
 				log.Printf("<!> WARN trying to send to dead connection: %v \n", msg.Client_id)
 			}

@@ -66,7 +66,7 @@ func (c *Connection) handleOutgoing() {
 				log.Printf("<!> INFO fail socket sending >%s<", err)
 				c.alive = false
 			} else {
-
+				c.rw.Flush()
 			}
 		}
 	}
