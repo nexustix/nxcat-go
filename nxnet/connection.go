@@ -25,6 +25,8 @@ func (c *Connection) setup() {
 	r := bufio.NewReader(c.conn)
 	w := bufio.NewWriter(c.conn)
 	c.rw = bufio.NewReadWriter(r, w)
+	// FIXME send on first message and not on connect
+	// (prevent spam on TLS servers)
 	*c.receivechan <- MakeMessage(MsgKindJoin, c.id, make([]byte, 0))
 }
 

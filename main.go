@@ -95,7 +95,8 @@ func main() {
 	localSendBuff := make(chan nxnet.Message, 8)
 	//stdioWriter := bufio.NewWriter(os.Stdout)
 
-	server := nxnet.NewServerTCP("0.0.0.0", "8080")
+	//server := nxnet.NewServerTCP("0.0.0.0", "8080")
+	server := nxnet.NewServerTCPxTSL("0.0.0.0", "8080")
 	//mux := util.NewMuxBasic()
 	//demux := util.NewDemuxBasic()
 
