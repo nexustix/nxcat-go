@@ -24,8 +24,6 @@ func NewMuxBasic() *MuxBasic {
 func (m *MuxBasic) MultiplexMessage(msg nxnet.Message) []byte {
 	var buff []byte
 
-	//idString := strconv.Itoa(msg.Client_id)
-	//idString := strconv.FormatUint(10, msg.Client_id)
 	idString := fmt.Sprint(msg.Client_id)
 
 	buff = append(buff, '(')
@@ -33,7 +31,6 @@ func (m *MuxBasic) MultiplexMessage(msg nxnet.Message) []byte {
 	buff = append(buff, ' ')
 	buff = append(buff, []byte(idString)...)
 	buff = append(buff, ' ')
-	//buff = append(buff, msg.Data...)
 	buff = append(buff, bytes.ReplaceAll(msg.Data, []byte(")"), []byte("))"))...)
 	buff = append(buff, ')')
 

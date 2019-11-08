@@ -15,17 +15,15 @@ type Connection struct {
 	receivechan *chan Message
 	sendchan    chan []byte
 	tsize       int
-	//inbuff  []byte
-	//outbuff []byte
-	rw *bufio.ReadWriter
-	id uint
+	rw          *bufio.ReadWriter
+	id          uint
 }
 
 func (c *Connection) setup() {
 	r := bufio.NewReader(c.conn)
 	w := bufio.NewWriter(c.conn)
 	c.rw = bufio.NewReadWriter(r, w)
-	// FIXME send on first message and not on connect
+	// FIXME send on first message and not on connect ?
 	// (prevent spam on TLS servers)
 	*c.receivechan <- MakeMessage(MsgKindJoin, c.id, make([]byte, 0))
 }
@@ -62,24 +60,11 @@ func (c *Connection) handleIncomming() {
 			*c.receivechan <- MakeMessage(MsgKindData, c.id, buff[0:n])
 		}
 	}
-	//*c.receivechan <- MakeMessage(MsgKindLeave, c.id, make([]byte, 0))
 	c.Disconnect()
 }
 
 func (c *Connection) handleOutgoing() {
 	for c.alive {
-		/*
-			for buff := range c.sendchan {
-				//FIXME handle number of written bytes
-				_, err := c.rw.Write(buff)
-				if bp.GotError(err) {
-					log.Printf("<!> INFO fail socket sending >%s<", err)
-					c.alive = false
-				} else {
-					c.rw.Flush()
-				}
-			}
-		*/
 
 		select {
 		case buff := <-c.sendchan:
@@ -93,7 +78,6 @@ func (c *Connection) handleOutgoing() {
 		}
 
 	}
-	//*c.receivechan <- MakeMessage(MsgKindLeave, c.id, make([]byte, 0))
 	c.Disconnect()
 }
 
@@ -112,11 +96,3 @@ func (c *Connection) IsAlive() bool {
 func (c *Connection) SendMessage(msg Message) {
 	c.sendchan <- msg.Data
 }
-
-//func (c *Connection) SendBytes(data []byte) {
-//	c.sendchan <- data
-//}
-
-//func (c *Connection) ReceiveMessage() []byte {
-//	return <-c.inchan
-//}

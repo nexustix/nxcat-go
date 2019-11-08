@@ -55,15 +55,11 @@ func (d *DemuxBasic) findMessage() bool {
 	if headerEnd > -1 {
 		header := d.buffer[headerStart+1 : headerEnd]
 		segs := bytes.SplitN(header, []byte(" "), 3)
-		//log.Printf("%v\n", segs)
 		kind := string(segs[0])
-		//id := string(segs[1])
-		//FIXME not handling error
 		id, err := strconv.ParseUint(string(segs[1]), 10, 32)
 		if bp.GotError(err) {
 			log.Printf("<-> CRITICAL failed to decode client ID >%s<", err)
 		}
-		//data := segs[2]
 		data := bytes.ReplaceAll(segs[2], []byte("))"), []byte(")"))
 
 		msg := nxnet.MakeMessage(kind, uint(id), data)

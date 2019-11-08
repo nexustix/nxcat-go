@@ -26,9 +26,6 @@ func NewServerTCPxTSL(hostname string, port string) *ServerTCPxTSL {
 }
 
 func (s *ServerTCPxTSL) Listen() {
-	//var listener net.Listener
-	//var err error
-
 	cer, err := tls.LoadX509KeyPair("server.crt", "server.key")
 	if err != nil {
 		log.Fatalf("<!> ERR loading cerificates: %s\n", err)
@@ -46,7 +43,6 @@ func (s *ServerTCPxTSL) Listen() {
 		if err != nil {
 			log.Printf("<-> WARN fail accepting: %s\n", err)
 		} else {
-			//conn.SetReadDeadline(time.Now().Add(time.Second * 3))
 			connection := NewConnection(conn, s.idCounter, &s.Messages)
 			s.connections[s.idCounter] = connection
 			s.connections[s.idCounter].Start()

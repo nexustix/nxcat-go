@@ -13,22 +13,15 @@ func WrapWriterSTDIO(pipe *chan nxnet.Message) func() {
 	h := bufio.NewWriter(os.Stdout)
 	mux := NewMuxBasic()
 	return func() {
-		//loop:
-		//	for {
 		select {
 		case msg := <-*pipe:
-			//log.Printf("DING!\n")
 			mMsg := mux.MultiplexMessage(msg)
 			_, err := h.Write(mMsg)
 			h.Flush()
 			if bp.GotError(err) {
 				log.Printf("<!> CRITICAL fail writing to STDOUT >%s<", err)
 			}
-			//default:
-			//	//return
-			//	break loop
 		}
-		//}
 	}
 }
 
@@ -54,5 +47,4 @@ func WrapReaderSTDIO(pipe *chan nxnet.Message) func() {
 			}
 		}
 	}
-
 }
