@@ -42,11 +42,16 @@ func (s *ServerTCPxTSL) Listen() {
 	defer listener.Close()
 
 	for {
-		conn, _ := listener.Accept()
-		connection := NewConnection(conn, s.idCounter, &s.Messages)
-		s.connections[s.idCounter] = connection
-		s.connections[s.idCounter].Start()
-		s.idCounter = s.idCounter + 1
+		conn, err := listener.Accept()
+		if err != nil {
+			log.Printf("<-> WARN fail accepting: %s\n", err)
+		} else {
+			//conn.SetReadDeadline(time.Now().Add(time.Second * 3))
+			connection := NewConnection(conn, s.idCounter, &s.Messages)
+			s.connections[s.idCounter] = connection
+			s.connections[s.idCounter].Start()
+			s.idCounter = s.idCounter + 1
+		}
 	}
 }
 

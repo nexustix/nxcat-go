@@ -30,6 +30,12 @@ func (c *Connection) setup() {
 	*c.receivechan <- MakeMessage(MsgKindJoin, c.id, make([]byte, 0))
 }
 
+func (c *Connection) Disconnect() {
+	*c.receivechan <- MakeMessage(MsgKindLeave, c.id, make([]byte, 0))
+	c.conn.Close()
+	c.alive = false
+}
+
 func NewConnection(conn net.Conn, id uint, receivechan *chan Message) *Connection {
 	connection := &Connection{
 		conn:  conn,
@@ -56,13 +62,27 @@ func (c *Connection) handleIncomming() {
 			*c.receivechan <- MakeMessage(MsgKindData, c.id, buff[0:n])
 		}
 	}
-	*c.receivechan <- MakeMessage(MsgKindLeave, c.id, make([]byte, 0))
+	//*c.receivechan <- MakeMessage(MsgKindLeave, c.id, make([]byte, 0))
+	c.Disconnect()
 }
 
 func (c *Connection) handleOutgoing() {
 	for c.alive {
-		for buff := range c.sendchan {
-			//FIXME handle number of written bytes
+		/*
+			for buff := range c.sendchan {
+				//FIXME handle number of written bytes
+				_, err := c.rw.Write(buff)
+				if bp.GotError(err) {
+					log.Printf("<!> INFO fail socket sending >%s<", err)
+					c.alive = false
+				} else {
+					c.rw.Flush()
+				}
+			}
+		*/
+
+		select {
+		case buff := <-c.sendchan:
 			_, err := c.rw.Write(buff)
 			if bp.GotError(err) {
 				log.Printf("<!> INFO fail socket sending >%s<", err)
@@ -71,8 +91,10 @@ func (c *Connection) handleOutgoing() {
 				c.rw.Flush()
 			}
 		}
+
 	}
-	*c.receivechan <- MakeMessage(MsgKindLeave, c.id, make([]byte, 0))
+	//*c.receivechan <- MakeMessage(MsgKindLeave, c.id, make([]byte, 0))
+	c.Disconnect()
 }
 
 func (c *Connection) Start() {

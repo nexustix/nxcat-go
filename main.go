@@ -1,14 +1,8 @@
 package main
 
 import (
-	"bufio"
-	"io"
-	"log"
-	"os"
 	"xyr/nexustix/nxcat/nxnet"
 	"xyr/nexustix/nxcat/util"
-
-	bp "github.com/nexustix/boilerplate"
 )
 
 /*
@@ -43,6 +37,7 @@ func writeMessageSTDOUT(pipe *chan nxnet.Message) {
 }
 */
 
+/*
 func wrapWriterSTDIO(pipe *chan nxnet.Message) func() {
 	h := bufio.NewWriter(os.Stdout)
 	mux := util.NewMuxBasic()
@@ -65,7 +60,8 @@ func wrapWriterSTDIO(pipe *chan nxnet.Message) func() {
 		}
 	}
 }
-
+*/
+/*
 func readMessageSTDIN(pipe *chan nxnet.Message, reader io.Reader) {
 	demux := util.NewDemuxBasic()
 	for {
@@ -89,6 +85,7 @@ func readMessageSTDIN(pipe *chan nxnet.Message, reader io.Reader) {
 		}
 	}
 }
+*/
 
 func main() {
 	localReceiveBuff := make(chan nxnet.Message, 8)
@@ -103,8 +100,15 @@ func main() {
 	go server.Listen()
 	//go demux.FindMessagesForever()
 	//go writeMessageSTDOUT(&demux.Messages, stdioWriter)
-	writeSTDIO := wrapWriterSTDIO(&localSendBuff)
-	go readMessageSTDIN(&localReceiveBuff, os.Stdin)
+	//writeSTDIO := wrapWriterSTDIO(&localSendBuff)
+	writeSTDIO := util.WrapWriterSTDIO(&localSendBuff)
+	readSTDIO := util.WrapReaderSTDIO(&localReceiveBuff)
+	//go readMessageSTDIN(&localReceiveBuff, os.Stdin)
+	go func() {
+		for {
+			readSTDIO()
+		}
+	}()
 
 	//for cheese := range localReceiveBuff {
 	//	log.Printf("CAKE! >%v<\n", cheese)

@@ -37,10 +37,14 @@ func (s *ServerTCP) Listen() {
 
 	for {
 		conn, _ := listener.Accept()
-		connection := NewConnection(conn, s.idCounter, &s.Messages)
-		s.connections[s.idCounter] = connection
-		s.connections[s.idCounter].Start()
-		s.idCounter = s.idCounter + 1
+		if err != nil {
+			log.Printf("<-> WARN fail accepting: %s\n", err)
+		} else {
+			connection := NewConnection(conn, s.idCounter, &s.Messages)
+			s.connections[s.idCounter] = connection
+			s.connections[s.idCounter].Start()
+			s.idCounter = s.idCounter + 1
+		}
 	}
 }
 
