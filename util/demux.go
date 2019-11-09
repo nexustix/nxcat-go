@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"log"
 	"strconv"
-	"xyr/nexustix/nxcat/nxnet"
+
+	"github.com/nexustix/nxcat-go/nxnet"
 
 	bp "github.com/nexustix/boilerplate"
 )

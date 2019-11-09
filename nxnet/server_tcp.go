@@ -25,6 +25,10 @@ func NewServerTCP(hostname string, port string) *ServerTCP {
 	return server
 }
 
+func (s *ServerTCP) GetMessageChannel() chan Message {
+	return s.Messages
+}
+
 func (s *ServerTCP) Listen() {
 	var listener net.Listener
 	var err error

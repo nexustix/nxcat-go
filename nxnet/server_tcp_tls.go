@@ -25,6 +25,10 @@ func NewServerTCPxTSL(hostname string, port string) *ServerTCPxTSL {
 	return server
 }
 
+func (s *ServerTCPxTSL) GetMessageChannel() chan Message {
+	return s.Messages
+}
+
 func (s *ServerTCPxTSL) Listen() {
 	cer, err := tls.LoadX509KeyPair("server.crt", "server.key")
 	if err != nil {

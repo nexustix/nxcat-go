@@ -4,7 +4,8 @@ import (
 	"bufio"
 	"log"
 	"os"
-	"xyr/nexustix/nxcat/nxnet"
+
+	"github.com/nexustix/nxcat-go/nxnet"
 
 	bp "github.com/nexustix/boilerplate"
 )

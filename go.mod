@@ -1,4 +1,4 @@
-module xyr/nexustix/nxcat
+module github.com/nexustix/nxcat-go
 
 go 1.13
 

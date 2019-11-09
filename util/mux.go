@@ -3,7 +3,8 @@ package util
 import (
 	"bytes"
 	"fmt"
-	"xyr/nexustix/nxcat/nxnet"
+
+	"github.com/nexustix/nxcat-go/nxnet"
 )
 
 func insertByte(slice []byte, index int, value byte) []byte {
