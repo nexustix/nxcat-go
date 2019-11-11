@@ -23,14 +23,21 @@ func (c *Connection) setup() {
 	r := bufio.NewReader(c.conn)
 	w := bufio.NewWriter(c.conn)
 	c.rw = bufio.NewReadWriter(r, w)
+	c.onConnect()
+
+}
+
+func (c *Connection) onConnect() {
 	// FIXME send on first message and not on connect ?
 	// (prevent spam on TLS servers)
-	*c.receivechan <- MakeMessage(MsgKindJoin, c.id, make([]byte, 0))
+	*c.receivechan <- MakeMessage(MsgKindJoin, c.id, []byte(""))
 }
 
 func (c *Connection) Disconnect() {
-	*c.receivechan <- MakeMessage(MsgKindLeave, c.id, make([]byte, 0))
-	c.conn.Close()
+	if c.alive {
+		c.conn.Close()
+		*c.receivechan <- MakeMessage(MsgKindLeave, c.id, []byte(""))
+	}
 	c.alive = false
 }
 
@@ -50,12 +57,13 @@ func NewConnection(conn net.Conn, id uint, receivechan *chan Message) *Connectio
 }
 
 func (c *Connection) handleIncomming() {
-	for c.alive {
+	for {
 		buff := make([]byte, c.tsize)
 		n, err := c.rw.Read(buff)
 		if bp.GotError(err) {
 			log.Printf("<-> INFO fail socket reading >%s<", err)
-			c.alive = false
+			//c.alive = false
+			break
 		} else {
 			*c.receivechan <- MakeMessage(MsgKindData, c.id, buff[0:n])
 		}
@@ -65,13 +73,13 @@ func (c *Connection) handleIncomming() {
 
 func (c *Connection) handleOutgoing() {
 	for c.alive {
-
 		select {
 		case buff := <-c.sendchan:
 			_, err := c.rw.Write(buff)
 			if bp.GotError(err) {
 				log.Printf("<!> INFO fail socket sending >%s<", err)
-				c.alive = false
+				//c.alive = false
+				break
 			} else {
 				c.rw.Flush()
 			}
@@ -94,5 +102,7 @@ func (c *Connection) IsAlive() bool {
 }
 
 func (c *Connection) SendMessage(msg Message) {
-	c.sendchan <- msg.Data
+	if c.alive {
+		c.sendchan <- msg.Data
+	}
 }

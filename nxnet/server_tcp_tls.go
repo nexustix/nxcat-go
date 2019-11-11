@@ -25,6 +25,14 @@ func NewServerTCPxTSL(hostname string, port string) *ServerTCPxTSL {
 	return server
 }
 
+func (s *ServerTCPxTSL) cleanUp() {
+	for k, v := range s.connections {
+		if !v.alive {
+			defer delete(s.connections, k)
+		}
+	}
+}
+
 func (s *ServerTCPxTSL) GetMessageChannel() chan Message {
 	return s.Messages
 }
@@ -52,6 +60,7 @@ func (s *ServerTCPxTSL) Listen() {
 			s.connections[s.idCounter].Start()
 			s.idCounter = s.idCounter + 1
 		}
+		s.cleanUp()
 	}
 }
 

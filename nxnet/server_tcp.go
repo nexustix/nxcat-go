@@ -25,6 +25,14 @@ func NewServerTCP(hostname string, port string) *ServerTCP {
 	return server
 }
 
+func (s *ServerTCP) cleanUp() {
+	for k, v := range s.connections {
+		if !v.alive {
+			defer delete(s.connections, k)
+		}
+	}
+}
+
 func (s *ServerTCP) GetMessageChannel() chan Message {
 	return s.Messages
 }
@@ -49,6 +57,7 @@ func (s *ServerTCP) Listen() {
 			s.connections[s.idCounter].Start()
 			s.idCounter = s.idCounter + 1
 		}
+		s.cleanUp()
 	}
 }
 

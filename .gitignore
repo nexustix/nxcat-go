@@ -1,4 +1,5 @@
 _discard/
 error_log.txt
+serverlog.txt
 server.crt
 server.key

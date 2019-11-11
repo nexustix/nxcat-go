@@ -18,6 +18,7 @@ func WrapWriterSTDIO(pipe *chan nxnet.Message) func() {
 		case msg := <-*pipe:
 			mMsg := mux.MultiplexMessage(msg)
 			_, err := h.Write(mMsg)
+			//log.Printf("<wrt< %s \n", mMsg)
 			h.Flush()
 			if bp.GotError(err) {
 				log.Printf("<!> CRITICAL fail writing to STDOUT >%s<", err)
@@ -32,6 +33,7 @@ func WrapReaderSTDIO(pipe *chan nxnet.Message) func() {
 	return func() {
 		buff := make([]byte, 1024)
 		n, err := h.Read(buff)
+		//log.Printf(">red> %s \n", buff[0:n])
 		if bp.GotError(err) {
 			log.Printf("<!> CRITICAL fail STDIN reading >%s<", err)
 		} else {
